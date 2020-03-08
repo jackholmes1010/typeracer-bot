@@ -2,15 +2,20 @@ import puppeteer from "puppeteer"
 import dotenv from "dotenv"
 dotenv.config()
 
-// prettier-ignore
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+    // prettier-ignore
 ;(async () => {
     const browser = await puppeteer.launch({ headless: false })
     const page = await browser.newPage()
 
     try {
         await page.goto("https://play.typeracer.com")
+
         const enterTypingRaceSelector =
             "a[title='Keyboard shortcut: Ctrl+Alt+I']"
+
+        // Wait for page to load
         await page.waitForSelector(enterTypingRaceSelector)
 
         const username = process.env.TYPERACER_USERNAME
@@ -21,10 +26,8 @@ dotenv.config()
             await page.click(".gwt-Anchor")
             await page.type("input[name='username']", username, { delay: 20 })
             await page.type("input[name='password']", password, { delay: 20 })
-            await Promise.all([
-                page.waitForNavigation(),
-                page.click('button[class="gwt-Button"]', { delay: 20 }),
-            ])
+            await page.click('button[class="gwt-Button"]', { delay: 20 })
+            await sleep(1000)
         }
 
         await page.click(enterTypingRaceSelector)
@@ -34,7 +37,7 @@ dotenv.config()
         let ready = await page.$(".lightLabel")
         while (ready !== null) {
             console.log("Waiting for race to start...")
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            await sleep(1000)
             ready = await page.$(".lightLabel")
         }
 
@@ -50,7 +53,7 @@ dotenv.config()
         // Type paragraph
         for (const letter of paragraph ?? "") {
             await page.keyboard.type(letter)
-            await new Promise(resolve => setTimeout(resolve, 100))
+            await sleep(100)
         }
 
         await page.waitForNavigation()
