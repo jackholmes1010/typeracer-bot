@@ -2,10 +2,11 @@ import puppeteer from "puppeteer"
 import dotenv from "dotenv"
 dotenv.config()
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
-    // prettier-ignore
+// prettier-ignore
 ;(async () => {
+    const sleep = (ms: number) =>
+        new Promise(resolve => setTimeout(resolve, ms))
+
     const enterTypingRaceSelector = "a[title='Keyboard shortcut: Ctrl+Alt+I']"
     const browser = await puppeteer.launch({ headless: false })
     const page = await browser.newPage()
