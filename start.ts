@@ -12,15 +12,20 @@ dotenv.config()
     const page = await browser.newPage()
 
     try {
+        const username = process.env.TYPERACER_USERNAME
+        const password = process.env.TYPERACER_PASSWORD
+        const boost = process.env.BOOST === "true"
+
+        if (boost) {
+            console.log("> Boost on")
+        }
+
         console.log("> Loading play.typeracer.com")
         await page.goto("https://play.typeracer.com")
         await page.waitForSelector(enterTypingRaceSelector)
 
-        const username = process.env.TYPERACER_USERNAME
-        const password = process.env.TYPERACER_PASSWORD
-
         // Login in to typeracer account
-        if (username && password) {
+        if (username && password && !boost) {
             console.log("> Logging in")
             await page.click(".gwt-Anchor")
             await page.type("input[name='username']", username, { delay: 20 })
@@ -58,7 +63,12 @@ dotenv.config()
         for (const letter of paragraph ?? "") {
             await page.keyboard.type(letter)
             process.stdout.write(letter)
-            await sleep(100)
+
+            if (boost) {
+                await sleep(10)
+            } else {
+                await sleep(100)
+            }
         }
 
         console.log("\n~*==>\n")
