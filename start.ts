@@ -11,6 +11,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
     const page = await browser.newPage()
 
     try {
+        console.log("> Loading play.typeracer.com")
         await page.goto("https://play.typeracer.com")
         await page.waitForSelector(enterTypingRaceSelector)
 
@@ -19,12 +20,13 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
         // Login in to typeracer account
         if (username && password) {
-            console.log("Logging in")
+            console.log("> Logging in")
             await page.click(".gwt-Anchor")
             await page.type("input[name='username']", username, { delay: 20 })
             await page.type("input[name='password']", password, { delay: 20 })
             await page.click('button[class="gwt-Button"]', { delay: 20 })
             await sleep(1000)
+            console.log("> Login successful")
         }
 
         await page.click(enterTypingRaceSelector)
@@ -34,12 +36,12 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
         let ready = await page.$(".lightLabel")
 
         while (ready !== null) {
-            console.log("Waiting for race to start...")
+            console.log("> Waiting for race to start...")
             await sleep(1000)
             ready = await page.$(".lightLabel")
         }
 
-        console.log("Race started")
+        console.log("> Race started")
 
         // Extract paragraph content
         const paragraph = (
@@ -49,13 +51,19 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
             )
         )[0]
 
+        console.log("\n~*==>")
+
         // Start typing paragraph
         for (const letter of paragraph ?? "") {
             await page.keyboard.type(letter)
+            process.stdout.write(letter)
             await sleep(100)
         }
 
-        await page.waitForNavigation()
+        console.log("\n~*==>\n")
+        console.log("> Race completed.")
+
+        await sleep(5000)
     } finally {
         await page.close()
         await browser.close()
