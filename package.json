@@ -16,6 +16,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "puppeteer": "^2.1.1"
   }
 }

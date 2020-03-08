@@ -1,4 +1,6 @@
 import puppeteer from "puppeteer"
+import dotenv from "dotenv"
+dotenv.config()
 
 // prettier-ignore
 ;(async () => {
@@ -10,6 +12,21 @@ import puppeteer from "puppeteer"
         const enterTypingRaceSelector =
             "a[title='Keyboard shortcut: Ctrl+Alt+I']"
         await page.waitForSelector(enterTypingRaceSelector)
+
+        const username = process.env.TYPERACER_USERNAME
+        const password = process.env.TYPERACER_PASSWORD
+
+        if (username && password) {
+            console.log("Logging in")
+            await page.click(".gwt-Anchor")
+            await page.type("input[name='username']", username, { delay: 20 })
+            await page.type("input[name='password']", password, { delay: 20 })
+            await Promise.all([
+                page.waitForNavigation(),
+                page.click('button[class="gwt-Button"]', { delay: 20 }),
+            ])
+        }
+
         await page.click(enterTypingRaceSelector)
         await page.waitForSelector(".lightLabel")
 
